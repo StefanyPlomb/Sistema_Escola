@@ -4,9 +4,9 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
+  System.Classes, Vcl.Graphics, System.Generics.Collections,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  Vcl.Imaging.pngimage, Vcl.ComCtrls;
+  Vcl.Imaging.pngimage, Vcl.ComCtrls, uEstudantes, System.JSON;
 
 type
   TMain = class(TForm)
@@ -120,11 +120,13 @@ type
     procedure but_voltar_disciplinasClick(Sender: TObject);
     procedure but_voltar_turmasClick(Sender: TObject);
     procedure but_voltar_matriculaClick(Sender: TObject);
-
+    procedure but_adicionar_estudanteClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure but_editar_estudanteClick(Sender: TObject);
+    procedure but_Salvar_estudanteClick(Sender: TObject);
+    procedure box_nome_estudanteChange(Sender: TObject);
   private
-    { Private declarations }
   public
-    { Public declarations }
   end;
 
 var
@@ -162,11 +164,48 @@ end;
 
 // Aba Estudantes
 
+procedure TMain.FormCreate(Sender: TObject);
+begin
+
+  edit_nome_estudante.ReadOnly := True;
+  edit_codigo_estudant.ReadOnly := True;
+  edit_cpf_estudante.ReadOnly := True;
+end;
+
 procedure TMain.but_volta_estudanteClick(Sender: TObject);
 begin
   Estudantes.ActivePage := Menu;
 end;
 
+procedure TMain.but_adicionar_estudanteClick(Sender: TObject);
+begin
+  edit_nome_estudante.ReadOnly := False;
+  edit_codigo_estudant.ReadOnly := False;
+  edit_cpf_estudante.ReadOnly := False;
+  Adicionar(edit_nome_estudante.Text,edit_cpf_estudante.Text);
+end;
+
+procedure TMain.but_editar_estudanteClick(Sender: TObject);
+begin
+  edit_nome_estudante.ReadOnly := False;
+  edit_codigo_estudant.ReadOnly := False;
+  edit_cpf_estudante.ReadOnly := False;
+end;
+
+procedure TMain.but_Salvar_estudanteClick(Sender: TObject);
+var Nome, CPF: String;
+begin
+  edit_nome_estudante.ReadOnly := True;
+  edit_codigo_estudant.ReadOnly := True;
+  edit_cpf_estudante.ReadOnly := True;
+  Nome:= edit_nome_estudante.Text;
+  box_nome_estudante.AddItem(Nome);
+end;
+
+procedure TMain.box_nome_estudanteChange(Sender: TObject);
+begin
+
+end;
 
 // Aba Professores
 
@@ -190,7 +229,7 @@ begin
 end;
 
 
-//Aba Matricula
+// Aba Matricula
 
 procedure TMain.but_voltar_matriculaClick(Sender: TObject);
 begin

@@ -5,65 +5,69 @@ interface
 uses
   System.SysUtils, System.Classes, System.Generics.Collections, Vcl.Forms;
 
+procedure Adicionar(aNome, aCPF: String);
+
 type
 
-  cEstudantes = class
-
+  TEstudante = class
   private
-
-    vNome: String;
-    vCodigo: Integer;
-    vCPF: Integer;
-
+    FNome: String;
+    FCodigo: Integer;
+    FCPF: Integer;
   public
-
-    constructor Create(Nome: string; Codigo: Integer; CPF: Integer);
     procedure SetNome(Nome: String);
     procedure SetCodigo(Codigo: Integer);
     procedure SetCPF(CPF: Integer);
     function GetNome: String;
     function GetCodigo: Integer;
     function GetCPF: Integer;
-
   end;
+
+var
+  ListaEstudantes: TObjectList<TEstudante>;
 
 implementation
 
-{ uEstudante }
+procedure Adicionar(aNome, aCPF: String);
+begin
+  ListaEstudantes.Add(TEstudante.Create());  
+end;
 
-constructor cEstudantes.Create(Nome: string; Codigo: Integer; CPF: Integer);
+procedure AdicionarCodigo(aCodigo: Integer);
 begin
 
 end;
 
-procedure cEstudantes.SetNome(Nome: String);
+{ TEstudante }
+
+procedure TEstudante.SetNome(Nome: String);
 begin
-  vNome:= Nome;
+  FNome := Nome;
 end;
 
-procedure cEstudantes.SetCodigo(Codigo: Integer);
+procedure TEstudante.SetCodigo(Codigo: Integer);
 begin
-  vCodigo:= Codigo;
+  FCodigo := Codigo;
 end;
 
-procedure cEstudantes.SetCPF(CPF: Integer);
+procedure TEstudante.SetCPF(CPF: Integer);
 begin
-  vCPF:= CPF;
+  FCPF := CPF;
 end;
 
-function cEstudantes.GetNome: String;
+function TEstudante.GetNome: String;
 begin
-  Result:= vNome;
+  Result := FNome;
 end;
 
-function cEstudantes.GetCodigo: Integer;
+function TEstudante.GetCodigo: Integer;
 begin
-  Result:= vCodigo;
+  Result := FCodigo;
 end;
 
-function cEstudantes.GetCPF: Integer;
+function TEstudante.GetCPF: Integer;
 begin
-  Result:= vCPF;
+  Result := FCPF;
 end;
 
 end.
