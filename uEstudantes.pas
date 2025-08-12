@@ -3,7 +3,8 @@ unit uEstudantes;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, REST.Json, System.IOUtils;
+  System.SysUtils, System.Classes, System.Generics.Collections, REST.Json,
+  System.IOUtils;
 
 procedure AdicionarEstudante(aNome, aCPF: String);
 procedure EditarEstudante(aCodigo: Integer; aNome, aCPF: String);
@@ -36,12 +37,15 @@ implementation
 { Operações do Estudante }
 
 procedure AdicionarEstudante(aNome, aCPF: String);
-var i, maiorCodigo: Integer;
-    estudante: TEstudante;
+var
+  i, maiorCodigo: Integer;
+  estudante: TEstudante;
 begin
-  maiorCodigo:=1;
-  for i := 0 to ListaEstudantes.Count - 1 do begin
-    if ListaEstudantes[i].GetCodigo >= maiorCodigo then begin
+  maiorCodigo := 1;
+  for i := 0 to ListaEstudantes.Count - 1 do
+  begin
+    if ListaEstudantes[i].GetCodigo >= maiorCodigo then
+    begin
       maiorCodigo := ListaEstudantes[i].GetCodigo + 1;
     end;
   end;
@@ -53,11 +57,14 @@ begin
 end;
 
 procedure EditarEstudante(aCodigo: Integer; aNome, aCPF: String);
-var i: Integer;
-    estudante: TEstudante;
+var
+  i: Integer;
+  estudante: TEstudante;
 begin
-  for i := 0 to ListaEstudantes.Count - 1 do begin
-    if ListaEstudantes[i].GetCodigo = aCodigo then begin
+  for i := 0 to ListaEstudantes.Count - 1 do
+  begin
+    if ListaEstudantes[i].GetCodigo = aCodigo then
+    begin
       estudante := ListaEstudantes[i];
       estudante.SetNome(aNome);
       estudante.SetCPF(aCPF);
@@ -67,11 +74,14 @@ begin
 end;
 
 procedure ExcluirEstudante(aCodigo: Integer);
-var i: Integer;
-    estudante: TEstudante;
+var
+  i: Integer;
+  estudante: TEstudante;
 begin
-  for i := 0 to ListaEstudantes.Count - 1 do begin
-    if ListaEstudantes[i].GetCodigo = aCodigo then begin
+  for i := 0 to ListaEstudantes.Count - 1 do
+  begin
+    if ListaEstudantes[i].GetCodigo = aCodigo then
+    begin
       estudante := ListaEstudantes[i];
       ListaEstudantes.Extract(estudante);
       estudante.Free;
@@ -81,11 +91,14 @@ begin
 end;
 
 function BuscarCodigoEstudantePeloNome(aNome: String): Integer;
-var i: Integer;
+var
+  i: Integer;
 begin
   Result := 0;
-  for i := 0 to ListaEstudantes.Count - 1 do begin
-    if ListaEstudantes[i].GetNome = aNome then begin
+  for i := 0 to ListaEstudantes.Count - 1 do
+  begin
+    if ListaEstudantes[i].GetNome = aNome then
+    begin
       Result := ListaEstudantes[i].GetCodigo;
       break;
     end;
@@ -93,30 +106,36 @@ begin
 end;
 
 procedure CarregarListaEstudantes;
-var caminho, linha, JSON: String;
-    i: Integer;
-    estudante: TEstudante;
+var
+  caminho, linha, Json: String;
+  i: Integer;
+  estudante: TEstudante;
 begin
   caminho := ExtractFilePath(ParamStr(0));
-  if not DirectoryExists(caminho + '\data') then begin
+  if not DirectoryExists(caminho + '\data') then
+  begin
     ForceDirectories(caminho + '\data')
   end;
-  if TFile.Exists(caminho + '\data\estudantes.json', false) then begin
-    JSON := TFile.ReadAllText(caminho + '\data\estudantes.json', TEncoding.UTF8);
-    ListaEstudantes := TJson.JsonToObject<TObjectList<TEstudante>>(JSON);
+  if TFile.Exists(caminho + '\data\estudantes.json', false) then
+  begin
+    Json := TFile.ReadAllText(caminho + '\data\estudantes.json',
+      TEncoding.UTF8);
+    ListaEstudantes := TJson.JsonToObject < TObjectList < TEstudante >> (Json);
   end;
 end;
 
 procedure SalvarListaEstudantes;
-var caminho, linha, JSON: String;
-    i: Integer;
+var
+  caminho, linha, Json: String;
+  i: Integer;
 begin
   caminho := ExtractFilePath(ParamStr(0));
-  if not DirectoryExists(caminho + '\data') then begin
+  if not DirectoryExists(caminho + '\data') then
+  begin
     ForceDirectories(caminho + '\data')
   end;
-  JSON := TJson.ObjectToJsonString(ListaEstudantes);
-  TFile.WriteAllText(caminho + '\data\estudantes.json', JSON, TEncoding.UTF8);
+  Json := TJson.ObjectToJsonString(ListaEstudantes);
+  TFile.WriteAllText(caminho + '\data\estudantes.json', Json, TEncoding.UTF8);
 end;
 
 { TEstudante }

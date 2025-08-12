@@ -10,7 +10,7 @@ uses
 
 type
   TMain = class(TForm)
-    PageControl: TPageControl;
+    PaginaControle: TPageControl;
     Login: TTabSheet;
     Menu: TTabSheet;
     Estudante: TTabSheet;
@@ -127,14 +127,15 @@ type
     procedure but_adicionar_estudanteClick(Sender: TObject);
     procedure edit_cpf_estudanteKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);//
     procedure but_excluir_estudanteClick(Sender: TObject);
-    procedure EstudanteShow(Sender: TObject);
+    procedure EstudanteShow(Sender: TObject);//
     procedure box_nome_estudanteChange(Sender: TObject);
     procedure but_limpar_estudanteClick(Sender: TObject);
     procedure but_loginClick(Sender: TObject);
+
   private
-    Operacao: String;
+    Operacao: String;   //
     procedure LimparEditsEstudantes;
     procedure EditarEditsEstudantes;
     procedure BloquearEditsEstudantes;
@@ -153,11 +154,23 @@ implementation
 
 {$R *.dfm}
 
+
+{login}
+
+procedure TMain.but_loginClick(Sender: TObject);
+begin
+  if (edit_login_user.Text = 'admin') and (edit_login_senha.Text = 'admin') then begin
+    PaginaControle.ActivePage := Menu;
+  end else begin
+    ShowMessage('Usuário ou senha incorreto');
+  end;
+end;
+
 { Form }
 
 procedure TMain.FormCreate(Sender: TObject);
 begin
-  PageControl.ActivePage := Login;
+  PaginaControle.ActivePage := Login;
   CarregarListas;
   BloquearEdits;
 end;
@@ -165,9 +178,13 @@ end;
 procedure TMain.CarregarListas;
 begin
   CarregarListaEstudantes;
+  //CarregarListaProfessores;
+  //CarregarListaTurmas;
+  //CarregarListaDisciplinas;
+  //CarregarListaMatriculas;
 end;
 
-procedure TMain.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TMain.FormClose(Sender: TObject; var Action: TCloseAction);//
 begin
   SalvarListas;
 end;
@@ -175,45 +192,97 @@ end;
 procedure TMain.SalvarListas;
 begin
   SalvarListaEstudantes;
+  //SalvarListaProfessores;
+  //SalvarListaTurmas;
+  //SalvarListaDisciplinas;
+  //SalvarListaMatriculas;
 end;
 
 procedure TMain.BloquearEdits;
 begin
   BloquearEditsEstudantes;
+  //BloquearEditsProfessores;
+  //BloquearEditsTurmas;
+  //BloquearEditsDisciplinas;
+  //BloquearEditsMatriculas;
 end;
 
-{ Tab Menu }
+{ Menu Direção }
 
 procedure TMain.but_disciplinaClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Disciplinas;
+  PaginaControle.ActivePage := Disciplinas;
 end;
 
 procedure TMain.but_estudanteClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Estudante;
+  PaginaControle.ActivePage := Estudante;
 end;
 
 procedure TMain.but_matriculaClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Matriculas;
+  PaginaControle.ActivePage := Matriculas;
 end;
 
 procedure TMain.but_professorClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Professores;
+  PaginaControle.ActivePage := Professores;
 end;
 
 procedure TMain.but_turmaClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Turmas;
+  PaginaControle.ActivePage := Turmas;
 end;
 
-{ Tab Estudantes }
+{ Estudantes }
 
 procedure TMain.but_voltar_estudanteClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Menu;
+  PaginaControle.ActivePage := Menu;
+end;
+
+procedure TMain.but_adicionar_estudanteClick(Sender: TObject);
+begin
+  //Operacao := 'Adicionar';  //
+  LimparEditsEstudantes;
+  EditarEditsEstudantes;
+  edit_nome_estudante.SetFocus;//
+end;
+
+procedure TMain.but_editar_estudanteClick(Sender: TObject);
+begin
+  //Operacao := 'Editar'; //
+  EditarEditsEstudantes;
+  edit_nome_estudante.SetFocus; //
+end;
+
+procedure TMain.but_excluir_estudanteClick(Sender: TObject);
+begin
+    ShowMessage('Excluir o estudante selecionado');
+    ExcluirEstudante(BuscarCodigoEstudantePeloNome(box_nome_estudante.Text));
+    RecarregarBoxEstudantes;
+    LimparEditsEstudantes;
+end;
+
+procedure TMain.but_limpar_estudanteClick(Sender: TObject);
+begin
+  LimparEditsEstudantes;
+end;
+
+{FUN}
+
+procedure TMain.BloquearEditsEstudantes;
+begin
+  edit_nome_estudante.ReadOnly := True;
+  edit_codigo_estudante.ReadOnly := True;
+  edit_cpf_estudante.ReadOnly := True;
+end;
+
+procedure TMain.EditarEditsEstudantes;
+begin
+  edit_nome_estudante.ReadOnly := False;
+  edit_codigo_estudante.ReadOnly := False;
+  edit_cpf_estudante.ReadOnly := False;
 end;
 
 procedure TMain.LimparEditsEstudantes;
@@ -224,7 +293,7 @@ begin
   box_nome_estudante.Text := '';
 end;
 
-procedure TMain.RecarregarBoxEstudantes;
+procedure TMain.RecarregarBoxEstudantes;//
 var i: Integer;
 begin
   box_nome_estudante.Items.Clear;
@@ -235,7 +304,7 @@ end;
 
 function TMain.ValidarConteudoEditsEstudantes: Boolean;
 begin
-  Result := false;
+  Result := false;    //
   if edit_nome_estudante.Text = '' then begin
     ShowMessage('É necessário preencher o nome do estudante para adicioná-lo');
   end;
@@ -246,21 +315,7 @@ begin
   end;
 end;
 
-procedure TMain.EditarEditsEstudantes;
-begin
-  edit_nome_estudante.ReadOnly := False;
-  edit_codigo_estudante.ReadOnly := False;
-  edit_cpf_estudante.ReadOnly := False;
-end;
-
-procedure TMain.BloquearEditsEstudantes;
-begin
-  edit_nome_estudante.ReadOnly := True;
-  edit_codigo_estudante.ReadOnly := True;
-  edit_cpf_estudante.ReadOnly := True;
-end;
-
-procedure TMain.box_nome_estudanteChange(Sender: TObject);
+procedure TMain.box_nome_estudanteChange(Sender: TObject); //
 var i: Integer;
     estudante: TEstudante;
 begin
@@ -275,25 +330,10 @@ begin
   end;
 end;
 
-procedure TMain.but_adicionar_estudanteClick(Sender: TObject);
-begin
-  Operacao := 'Adicionar';
-  LimparEditsEstudantes;
-  EditarEditsEstudantes;
-  edit_nome_estudante.SetFocus;
-end;
-
-procedure TMain.but_editar_estudanteClick(Sender: TObject);
-begin
-  Operacao := 'Editar';
-  EditarEditsEstudantes;
-  edit_nome_estudante.SetFocus;
-end;
-
 procedure TMain.edit_cpf_estudanteKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+  Shift: TShiftState);//
 begin
-  if Key = VK_RETURN then begin
+
     if ValidarConteudoEditsEstudantes then begin
       if Operacao = 'Adicionar' then begin
         AdicionarEstudante(edit_nome_estudante.Text, edit_cpf_estudante.Text);
@@ -306,63 +346,41 @@ begin
       RecarregarBoxEstudantes;
       BloquearEditsEstudantes;
     end;
-  end;
 end;
 
-procedure TMain.EstudanteShow(Sender: TObject);
+procedure TMain.EstudanteShow(Sender: TObject);  //
 begin
   RecarregarBoxEstudantes;
 end;
 
-procedure TMain.but_excluir_estudanteClick(Sender: TObject);
-begin
-  if MessageDlg('Tem certeza de que deseja excluir o estudante selecionado?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
-    ExcluirEstudante(BuscarCodigoEstudantePeloNome(box_nome_estudante.Text));
-    RecarregarBoxEstudantes;
-    LimparEditsEstudantes;
-  end;
-end;
-
-procedure TMain.but_limpar_estudanteClick(Sender: TObject);
-begin
-  LimparEditsEstudantes;
-end;
-
-procedure TMain.but_loginClick(Sender: TObject);
-begin
-  if (edit_login_user.Text = 'admin') and (edit_login_senha.Text = 'admin') then begin
-    PageControl.ActivePage := Menu;
-  end else begin
-    ShowMessage('Usuário ou senha incorreto');
-  end;
-end;
-
-{ Tab Professores }
+{ Professores }
 
 procedure TMain.but_voltar_profClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Menu;
+  PaginaControle.ActivePage := Menu;
 end;
 
-{ Tab Diciplinas }
+
+
+{ Diciplinas }
 
 procedure TMain.but_voltar_disciplinasClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Menu;
+  PaginaControle.ActivePage := Menu;
 end;
 
-{ Tab Turma }
+{ Turma }
 
 procedure TMain.but_voltar_turmasClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Menu;
+  PaginaControle.ActivePage := Menu;
 end;
 
-{ Tab Matricula }
+{  Matricula }
 
 procedure TMain.but_voltar_matriculaClick(Sender: TObject);
 begin
-  PageControl.ActivePage := Menu;
+  PaginaControle.ActivePage := Menu;
 end;
 
 end.
