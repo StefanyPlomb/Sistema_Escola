@@ -36,22 +36,6 @@ type
     but_disciplina: TButton;
     but_turma: TButton;
     but_matricula: TButton;
-    painel_controle_estudante: TPanel;
-    img_estudantes: TImage;
-    label_estudantes: TLabel;
-    but_adicionar_estudante: TButton;
-    but_editar_estudante: TButton;
-    but_excluir_estudante: TButton;
-    box_nome_estudante: TComboBox;
-    edit_codigo_estudant: TEdit;
-    edit_nome_estudante: TEdit;
-    edit_cpf_estudante: TEdit;
-    box_Materias_estudante: TListBox;
-    but_Salvar_estudante: TButton;
-    disciplinas_estudante: TLabel;
-    label_codigo_estudante: TLabel;
-    label_nome_estudante: TLabel;
-    label_cpf_estudante: TLabel;
     img_prof: TImage;
     label_prof: TLabel;
     box_nome_prof: TComboBox;
@@ -68,7 +52,6 @@ type
     edit_codigo_prof: TEdit;
     edit_nome_prof: TEdit;
     edit_cpf_prof: TEdit;
-    but_volta_estudante: TButton;
     but_voltar_prof: TButton;
     img_disci: TImage;
     box_disciplinas: TListBox;
@@ -110,6 +93,25 @@ type
     label_codigo_matricula: TLabel;
     label_codigoTurma_matricula: TLabel;
     label_codigoEstudante_matricula: TLabel;
+    Panel1: TPanel;
+    but_excluir_estudante: TButton;
+    but_editar_estudante: TButton;
+    but_volta_estudante: TButton;
+    but_Salvar_estudante: TButton;
+    but_adicionar_estudante: TButton;
+    Panel2: TPanel;
+    img_estudantes: TImage;
+    painel_controle_estudante: TPanel;
+    label_codigo_estudante: TLabel;
+    label_nome_estudante: TLabel;
+    label_cpf_estudante: TLabel;
+    edit_codigo_estudant: TEdit;
+    edit_nome_estudante: TEdit;
+    edit_cpf_estudante: TEdit;
+    box_Materias_estudante: TListBox;
+    box_nome_estudante: TComboBox;
+    disciplinas_estudante: TLabel;
+    label_estudantes: TLabel;
     procedure but_estudanteClick(Sender: TObject);
     procedure but_professorClick(Sender: TObject);
     procedure but_disciplinaClick(Sender: TObject);
@@ -135,6 +137,7 @@ var
 implementation
 
 {$R *.dfm}
+
 // Menu De Direção
 
 procedure TMain.but_disciplinaClick(Sender: TObject);
@@ -199,7 +202,7 @@ begin
   edit_codigo_estudant.ReadOnly := True;
   edit_cpf_estudante.ReadOnly := True;
   Nome:= edit_nome_estudante.Text;
-  box_nome_estudante.AddItem(Nome);
+//  box_nome_estudante.AddItem(Nome);
 end;
 
 procedure TMain.box_nome_estudanteChange(Sender: TObject);
