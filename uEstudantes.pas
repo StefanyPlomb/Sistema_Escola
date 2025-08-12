@@ -3,9 +3,14 @@ unit uEstudantes;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, Vcl.Forms;
+  System.SysUtils, System.Classes, System.Generics.Collections, REST.Json, System.IOUtils;
 
-procedure Adicionar(aNome, aCPF: String);
+procedure AdicionarEstudante(aNome, aCPF: String);
+procedure EditarEstudante(aCodigo: Integer; aNome, aCPF: String);
+procedure ExcluirEstudante(aCodigo: Integer);
+function BuscarCodigoEstudantePeloNome(aNome: String): Integer;
+procedure CarregarListaEstudantes;
+procedure SalvarListaEstudantes;
 
 type
 
@@ -13,14 +18,14 @@ type
   private
     FNome: String;
     FCodigo: Integer;
-    FCPF: Integer;
+    FCPF: String;
   public
     procedure SetNome(Nome: String);
     procedure SetCodigo(Codigo: Integer);
-    procedure SetCPF(CPF: Integer);
+    procedure SetCPF(CPF: String);
     function GetNome: String;
     function GetCodigo: Integer;
-    function GetCPF: Integer;
+    function GetCPF: String;
   end;
 
 var
@@ -28,14 +33,90 @@ var
 
 implementation
 
-procedure Adicionar(aNome, aCPF: String);
+{ Operações do Estudante }
+
+procedure AdicionarEstudante(aNome, aCPF: String);
+var i, maiorCodigo: Integer;
+    estudante: TEstudante;
 begin
-  ListaEstudantes.Add(TEstudante.Create());  
+  maiorCodigo:=1;
+  for i := 0 to ListaEstudantes.Count - 1 do begin
+    if ListaEstudantes[i].GetCodigo >= maiorCodigo then begin
+      maiorCodigo := ListaEstudantes[i].GetCodigo + 1;
+    end;
+  end;
+  estudante := TEstudante.Create;
+  estudante.SetCodigo(maiorCodigo);
+  estudante.SetNome(aNome);
+  estudante.SetCPF(aCPF);
+  ListaEstudantes.Add(estudante);
 end;
 
-procedure AdicionarCodigo(aCodigo: Integer);
+procedure EditarEstudante(aCodigo: Integer; aNome, aCPF: String);
+var i: Integer;
+    estudante: TEstudante;
 begin
+  for i := 0 to ListaEstudantes.Count - 1 do begin
+    if ListaEstudantes[i].GetCodigo = aCodigo then begin
+      estudante := ListaEstudantes[i];
+      estudante.SetNome(aNome);
+      estudante.SetCPF(aCPF);
+      break;
+    end;
+  end;
+end;
 
+procedure ExcluirEstudante(aCodigo: Integer);
+var i: Integer;
+    estudante: TEstudante;
+begin
+  for i := 0 to ListaEstudantes.Count - 1 do begin
+    if ListaEstudantes[i].GetCodigo = aCodigo then begin
+      estudante := ListaEstudantes[i];
+      ListaEstudantes.Extract(estudante);
+      estudante.Free;
+      break;
+    end;
+  end;
+end;
+
+function BuscarCodigoEstudantePeloNome(aNome: String): Integer;
+var i: Integer;
+begin
+  Result := 0;
+  for i := 0 to ListaEstudantes.Count - 1 do begin
+    if ListaEstudantes[i].GetNome = aNome then begin
+      Result := ListaEstudantes[i].GetCodigo;
+      break;
+    end;
+  end;
+end;
+
+procedure CarregarListaEstudantes;
+var caminho, linha, JSON: String;
+    i: Integer;
+    estudante: TEstudante;
+begin
+  caminho := ExtractFilePath(ParamStr(0));
+  if not DirectoryExists(caminho + '\data') then begin
+    ForceDirectories(caminho + '\data')
+  end;
+  if TFile.Exists(caminho + '\data\estudantes.json', false) then begin
+    JSON := TFile.ReadAllText(caminho + '\data\estudantes.json', TEncoding.UTF8);
+    ListaEstudantes := TJson.JsonToObject<TObjectList<TEstudante>>(JSON);
+  end;
+end;
+
+procedure SalvarListaEstudantes;
+var caminho, linha, JSON: String;
+    i: Integer;
+begin
+  caminho := ExtractFilePath(ParamStr(0));
+  if not DirectoryExists(caminho + '\data') then begin
+    ForceDirectories(caminho + '\data')
+  end;
+  JSON := TJson.ObjectToJsonString(ListaEstudantes);
+  TFile.WriteAllText(caminho + '\data\estudantes.json', JSON, TEncoding.UTF8);
 end;
 
 { TEstudante }
@@ -50,7 +131,7 @@ begin
   FCodigo := Codigo;
 end;
 
-procedure TEstudante.SetCPF(CPF: Integer);
+procedure TEstudante.SetCPF(CPF: String);
 begin
   FCPF := CPF;
 end;
@@ -65,9 +146,17 @@ begin
   Result := FCodigo;
 end;
 
-function TEstudante.GetCPF: Integer;
+function TEstudante.GetCPF: String;
 begin
   Result := FCPF;
 end;
+
+initialization
+
+ListaEstudantes := TObjectList<TEstudante>.Create;
+
+finalization
+
+ListaEstudantes.Free;
 
 end.

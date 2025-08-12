@@ -6,11 +6,11 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, System.Generics.Collections,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  Vcl.Imaging.pngimage, Vcl.ComCtrls, uEstudantes, System.JSON;
+  Vcl.Imaging.pngimage, Vcl.ComCtrls, uEstudantes, Vcl.Mask;
 
 type
   TMain = class(TForm)
-    Estudantes: TPageControl;
+    PageControl: TPageControl;
     Login: TTabSheet;
     Menu: TTabSheet;
     Estudante: TTabSheet;
@@ -36,23 +36,6 @@ type
     but_disciplina: TButton;
     but_turma: TButton;
     but_matricula: TButton;
-    img_prof: TImage;
-    label_prof: TLabel;
-    box_nome_prof: TComboBox;
-    painel_controle_prof: TPanel;
-    but_adicionar_prof: TButton;
-    but_editar_prof: TButton;
-    but_excluir_prof: TButton;
-    but_salvar_prof: TButton;
-    label_codigo_prof: TLabel;
-    label_nome_prof: TLabel;
-    label_cpf_prof: TLabel;
-    label_turmas: TLabel;
-    box_turmas_prof: TListBox;
-    edit_codigo_prof: TEdit;
-    edit_nome_prof: TEdit;
-    edit_cpf_prof: TEdit;
-    but_voltar_prof: TButton;
     img_disci: TImage;
     box_disciplinas: TListBox;
     edit_codigo_disci: TEdit;
@@ -93,41 +76,73 @@ type
     label_codigo_matricula: TLabel;
     label_codigoTurma_matricula: TLabel;
     label_codigoEstudante_matricula: TLabel;
-    Panel1: TPanel;
+    painel_menu_lateral_estudante: TPanel;
     but_excluir_estudante: TButton;
     but_editar_estudante: TButton;
-    but_volta_estudante: TButton;
-    but_Salvar_estudante: TButton;
+    but_voltar_estudante: TButton;
     but_adicionar_estudante: TButton;
-    Panel2: TPanel;
+    painel_main_estudantes: TPanel;
     img_estudantes: TImage;
     painel_controle_estudante: TPanel;
     label_codigo_estudante: TLabel;
     label_nome_estudante: TLabel;
     label_cpf_estudante: TLabel;
-    edit_codigo_estudant: TEdit;
+    edit_codigo_estudante: TEdit;
     edit_nome_estudante: TEdit;
-    edit_cpf_estudante: TEdit;
     box_Materias_estudante: TListBox;
     box_nome_estudante: TComboBox;
     disciplinas_estudante: TLabel;
     label_estudantes: TLabel;
+    but_limpar_estudante: TButton;
+    edit_cpf_estudante: TMaskEdit;
+    painel_menu_lateral_professor: TPanel;
+    but_excluir_professor: TButton;
+    but_editar_professor: TButton;
+    but_voltar_professor: TButton;
+    but_adicionar_professor: TButton;
+    but_limpar_professor: TButton;
+    painel_main_professor: TPanel;
+    img_professor: TImage;
+    label_professor: TLabel;
+    painel_controle_professor: TPanel;
+    label_codigo_professor: TLabel;
+    label_nome_professor: TLabel;
+    label_CPF_professor: TLabel;
+    edit_codigo_professor: TEdit;
+    edit_nome_professor: TEdit;
+    edit_CPF_professor: TMaskEdit;
+    box_nome_professor: TComboBox;
     procedure but_estudanteClick(Sender: TObject);
     procedure but_professorClick(Sender: TObject);
     procedure but_disciplinaClick(Sender: TObject);
     procedure but_turmaClick(Sender: TObject);
     procedure but_matriculaClick(Sender: TObject);
-    procedure but_volta_estudanteClick(Sender: TObject);
+    procedure but_voltar_estudanteClick(Sender: TObject);
     procedure but_voltar_profClick(Sender: TObject);
     procedure but_voltar_disciplinasClick(Sender: TObject);
     procedure but_voltar_turmasClick(Sender: TObject);
     procedure but_voltar_matriculaClick(Sender: TObject);
-    procedure but_adicionar_estudanteClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure but_editar_estudanteClick(Sender: TObject);
-    procedure but_Salvar_estudanteClick(Sender: TObject);
+    procedure but_adicionar_estudanteClick(Sender: TObject);
+    procedure edit_cpf_estudanteKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure but_excluir_estudanteClick(Sender: TObject);
+    procedure EstudanteShow(Sender: TObject);
     procedure box_nome_estudanteChange(Sender: TObject);
+    procedure but_limpar_estudanteClick(Sender: TObject);
+    procedure but_loginClick(Sender: TObject);
   private
+    Operacao: String;
+    procedure LimparEditsEstudantes;
+    procedure EditarEditsEstudantes;
+    procedure BloquearEditsEstudantes;
+    function ValidarConteudoEditsEstudantes: Boolean;
+    procedure RecarregarBoxEstudantes;
+    procedure CarregarListas;
+    procedure SalvarListas;
+    procedure BloquearEdits;
   public
   end;
 
@@ -138,105 +153,216 @@ implementation
 
 {$R *.dfm}
 
-// Menu De Direção
+{ Form }
+
+procedure TMain.FormCreate(Sender: TObject);
+begin
+  PageControl.ActivePage := Login;
+  CarregarListas;
+  BloquearEdits;
+end;
+
+procedure TMain.CarregarListas;
+begin
+  CarregarListaEstudantes;
+end;
+
+procedure TMain.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  SalvarListas;
+end;
+
+procedure TMain.SalvarListas;
+begin
+  SalvarListaEstudantes;
+end;
+
+procedure TMain.BloquearEdits;
+begin
+  BloquearEditsEstudantes;
+end;
+
+{ Tab Menu }
 
 procedure TMain.but_disciplinaClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Disciplinas;
+  PageControl.ActivePage := Disciplinas;
 end;
 
 procedure TMain.but_estudanteClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Estudante;
+  PageControl.ActivePage := Estudante;
 end;
 
 procedure TMain.but_matriculaClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Matriculas;
+  PageControl.ActivePage := Matriculas;
 end;
 
 procedure TMain.but_professorClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Professores;
+  PageControl.ActivePage := Professores;
 end;
 
 procedure TMain.but_turmaClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Turmas;
+  PageControl.ActivePage := Turmas;
 end;
 
-// Aba Estudantes
+{ Tab Estudantes }
 
-procedure TMain.FormCreate(Sender: TObject);
+procedure TMain.but_voltar_estudanteClick(Sender: TObject);
 begin
+  PageControl.ActivePage := Menu;
+end;
 
+procedure TMain.LimparEditsEstudantes;
+begin
+  edit_nome_estudante.Clear;
+  edit_codigo_estudante.Clear;
+  edit_cpf_estudante.Clear;
+  box_nome_estudante.Text := '';
+end;
+
+procedure TMain.RecarregarBoxEstudantes;
+var i: Integer;
+begin
+  box_nome_estudante.Items.Clear;
+  for i := 0 to ListaEstudantes.Count - 1 do begin
+    box_nome_estudante.Items.Add(ListaEstudantes[i].GetNome);
+  end;
+end;
+
+function TMain.ValidarConteudoEditsEstudantes: Boolean;
+begin
+  Result := false;
+  if edit_nome_estudante.Text = '' then begin
+    ShowMessage('É necessário preencher o nome do estudante para adicioná-lo');
+  end;
+  if edit_cpf_estudante.Text = '' then begin
+    ShowMessage('É necessário preencher o CPF do estudante para adicioná-lo');
+  end else begin
+    Result := true;
+  end;
+end;
+
+procedure TMain.EditarEditsEstudantes;
+begin
+  edit_nome_estudante.ReadOnly := False;
+  edit_codigo_estudante.ReadOnly := False;
+  edit_cpf_estudante.ReadOnly := False;
+end;
+
+procedure TMain.BloquearEditsEstudantes;
+begin
   edit_nome_estudante.ReadOnly := True;
-  edit_codigo_estudant.ReadOnly := True;
+  edit_codigo_estudante.ReadOnly := True;
   edit_cpf_estudante.ReadOnly := True;
 end;
 
-procedure TMain.but_volta_estudanteClick(Sender: TObject);
+procedure TMain.box_nome_estudanteChange(Sender: TObject);
+var i: Integer;
+    estudante: TEstudante;
 begin
-  Estudantes.ActivePage := Menu;
+  for i := 0 to ListaEstudantes.Count - 1 do begin
+    if ListaEstudantes[i].GetNome = box_nome_estudante.Text then begin
+      estudante := ListaEstudantes[i];
+      edit_codigo_estudante.Text := IntToStr(estudante.GetCodigo);
+      edit_nome_estudante.Text := estudante.GetNome;
+      edit_cpf_estudante.Text := estudante.GetCPF;
+      break;
+    end;
+  end;
 end;
 
 procedure TMain.but_adicionar_estudanteClick(Sender: TObject);
 begin
-  edit_nome_estudante.ReadOnly := False;
-  edit_codigo_estudant.ReadOnly := False;
-  edit_cpf_estudante.ReadOnly := False;
-  Adicionar(edit_nome_estudante.Text,edit_cpf_estudante.Text);
+  Operacao := 'Adicionar';
+  LimparEditsEstudantes;
+  EditarEditsEstudantes;
+  edit_nome_estudante.SetFocus;
 end;
 
 procedure TMain.but_editar_estudanteClick(Sender: TObject);
 begin
-  edit_nome_estudante.ReadOnly := False;
-  edit_codigo_estudant.ReadOnly := False;
-  edit_cpf_estudante.ReadOnly := False;
+  Operacao := 'Editar';
+  EditarEditsEstudantes;
+  edit_nome_estudante.SetFocus;
 end;
 
-procedure TMain.but_Salvar_estudanteClick(Sender: TObject);
-var Nome, CPF: String;
+procedure TMain.edit_cpf_estudanteKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
 begin
-  edit_nome_estudante.ReadOnly := True;
-  edit_codigo_estudant.ReadOnly := True;
-  edit_cpf_estudante.ReadOnly := True;
-  Nome:= edit_nome_estudante.Text;
-//  box_nome_estudante.AddItem(Nome);
+  if Key = VK_RETURN then begin
+    if ValidarConteudoEditsEstudantes then begin
+      if Operacao = 'Adicionar' then begin
+        AdicionarEstudante(edit_nome_estudante.Text, edit_cpf_estudante.Text);
+        LimparEditsEstudantes;
+      end else if Operacao = 'Editar' then begin
+        if MessageDlg('Tem certeza de que deseja editar o estudante selecionado?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
+          EditarEstudante(StrToInt(edit_codigo_estudante.Text), edit_nome_estudante.Text, edit_cpf_estudante.Text);
+        end;
+      end;
+      RecarregarBoxEstudantes;
+      BloquearEditsEstudantes;
+    end;
+  end;
 end;
 
-procedure TMain.box_nome_estudanteChange(Sender: TObject);
+procedure TMain.EstudanteShow(Sender: TObject);
 begin
-
+  RecarregarBoxEstudantes;
 end;
 
-// Aba Professores
+procedure TMain.but_excluir_estudanteClick(Sender: TObject);
+begin
+  if MessageDlg('Tem certeza de que deseja excluir o estudante selecionado?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
+    ExcluirEstudante(BuscarCodigoEstudantePeloNome(box_nome_estudante.Text));
+    RecarregarBoxEstudantes;
+    LimparEditsEstudantes;
+  end;
+end;
+
+procedure TMain.but_limpar_estudanteClick(Sender: TObject);
+begin
+  LimparEditsEstudantes;
+end;
+
+procedure TMain.but_loginClick(Sender: TObject);
+begin
+  if (edit_login_user.Text = 'admin') and (edit_login_senha.Text = 'admin') then begin
+    PageControl.ActivePage := Menu;
+  end else begin
+    ShowMessage('Usuário ou senha incorreto');
+  end;
+end;
+
+{ Tab Professores }
 
 procedure TMain.but_voltar_profClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Menu;
+  PageControl.ActivePage := Menu;
 end;
 
-// Aba Diciplinas
+{ Tab Diciplinas }
 
 procedure TMain.but_voltar_disciplinasClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Menu;
+  PageControl.ActivePage := Menu;
 end;
 
-// Aba Turma
+{ Tab Turma }
 
 procedure TMain.but_voltar_turmasClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Menu;
+  PageControl.ActivePage := Menu;
 end;
 
-
-// Aba Matricula
+{ Tab Matricula }
 
 procedure TMain.but_voltar_matriculaClick(Sender: TObject);
 begin
-  Estudantes.ActivePage := Menu;
+  PageControl.ActivePage := Menu;
 end;
 
 end.
