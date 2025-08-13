@@ -292,6 +292,11 @@ begin
     LimparEditsEstudantes;
 end;
 
+procedure TMain.but_limpar_estudanteClick(Sender: TObject);
+begin
+  LimparEditsEstudantes;
+end;
+
 procedure TMain.but_salvar_estudanteClick(Sender: TObject);
 begin
 
@@ -522,7 +527,7 @@ end;
 procedure TMain.but_excluir_disciplinasClick(Sender: TObject);
 begin
     ShowMessage('Excluir a disciplina selecionada');
-    ExcluirDisciplina(BuscarCodigoDisciplinaPeloNome(box_nome_disci.Text));
+    ExcluirDisciplina(BuscarCodigoDisciplinaPeloNome(box_disciplinas.Text));
     RecarregarBoxDisciplinas;
     LimparEditsDisciplinas;
 end;
@@ -536,7 +541,7 @@ procedure TMain.but_salvar_disciplinasClick(Sender: TObject);
 begin
     if ValidarConteudoEditsDiciplinas then begin
       if Operacao = 'Adicionar' then begin
-        AdicionarDisciplinas(edit_nome_disci.Text);
+        AdicionarDisciplina(edit_nome_disci.Text);
         LimparEditsDisciplinas;
       end else if Operacao = 'Editar' then begin
         if MessageDlg('Tem certeza de que deseja editar a disciplina selecionada?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
@@ -549,6 +554,65 @@ begin
 end;
 
 {Funções Disciplinas }
+
+ procedure TMain.BloquearEditsDisciplinas;
+begin
+  edit_nome_disci.ReadOnly := True;
+  edit_codigo_disci.ReadOnly := True;
+
+end;
+
+ procedure TMain.EditarEditsDisciplinas;
+begin
+  edit_nome_disci.ReadOnly := False;
+  edit_codigo_disci.ReadOnly := False;
+
+end;
+
+procedure TMain.LimparEditsDisciplinas;
+begin
+  edit_nome_disci.Clear;
+  edit_codigo_disci.Clear;
+end;
+
+procedure TMain.RecarregarBoxdisciplinas;
+var i: Integer;
+begin
+  box_disciplinas.Items.Clear;
+  for i := 0 to ListaDisciplinas.Count - 1 do begin
+    box_disciplinas.Items.Add(ListaDisciplinas[i].GetNome);
+  end;
+end;
+
+function TMain.ValidarConteudoEditsDisciplinas: Boolean;
+begin
+  Result := false;
+  if edit_nome_disci.Text = '' then begin
+    ShowMessage('É necessário preencher o nome da disciplina para adicioná-lo');
+  end else begin
+    Result := true;
+  end;
+end;
+
+procedure TMain.box_disciplinasChange(Sender: TObject);
+var i: Integer;
+    disciplinas: TDisciplina;
+begin
+  for i := 0 to ListaDisciplinas.Count - 1 do begin
+    if ListaDisciplinas[i].GetNome = box_disciplinas.Text then begin
+      disciplinas := ListaDisciplinas[i];
+      edit_codigo_disci.Text := IntToStr(disciplinas.GetCodigo);
+      edit_nome_disci.Text := disciplinas.GetNome;
+      break;
+    end;
+  end;
+end;
+
+procedure TMain.DisciplinasShow(Sender: TObject);
+begin
+  RecarregarBoxDisciplinas;
+end;
+
 
 { Turma }
 
