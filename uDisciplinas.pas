@@ -7,12 +7,12 @@ uses
 
 type
 
-  CDisciplinas = class
+  TDisciplina = class
 
   private
 
-    vCodigo: Integer;
-    vNomeDisciplinas: String;
+    FCodigo: Integer;
+    FNomeDisciplinas: String;
 
   public
 
@@ -26,31 +26,31 @@ type
 
 implementation
 
-{ CDisciplinas }
+{ TDisciplinas }
 
-constructor CDisciplinas.Create(Codigo: Integer; Nome: String);
+constructor TDisciplina.Create(Codigo: Integer; Nome: String);
 begin
 
 end;
 
-procedure CDisciplinas.SetCodigo(Codigo: Integer);
+procedure TDisciplina.SetCodigo(Codigo: Integer);
 begin
-  vCodigo := Codigo;
+  FCodigo := Codigo;
 end;
 
-procedure CDisciplinas.SetNome(Nome: String);
+procedure TDisciplina.SetNome(Nome: String);
 begin
-  vNomeDisciplinas := Nome;
+  FNomeDisciplinas := Nome;
 end;
 
-function CDisciplinas.GetCodigo: Integer;
+function TDisciplina.GetCodigo: Integer;
 begin
-  Result := vCodigo;
+  Result := FCodigo;
 end;
 
-function CDisciplinas.GetNome: String;
+function TDisciplina.GetNome: String;
 begin
-  Result := vNomeDisciplinas;
+  Result := FNomeDisciplinas;
 end;
 
 end.

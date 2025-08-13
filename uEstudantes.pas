@@ -118,8 +118,7 @@ begin
   end;
   if TFile.Exists(caminho + '\data\estudantes.json', false) then
   begin
-    Json := TFile.ReadAllText(caminho + '\data\estudantes.json',
-      TEncoding.UTF8);
+    Json := TFile.ReadAllText(caminho + '\data\estudantes.json', TEncoding.UTF8);
     ListaEstudantes := TJson.JsonToObject < TObjectList < TEstudante >> (Json);
   end;
 end;

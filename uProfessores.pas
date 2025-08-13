@@ -3,66 +3,171 @@ unit uProfessores;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Generics.Collections, Vcl.Forms;
+  System.SysUtils, System.Classes, System.Generics.Collections, REST.Json,
+  System.IOUtils;
+
+procedure AdicionarProfessor(aNome, aCPF: String);
+procedure EditarProfessor(aCodigo: Integer; aNome, aCPF: String);
+procedure ExcluirProfessor(aCodigo: Integer);
+function BuscarCodigoProfessorPeloNome(aNome: String): Integer;
+procedure CarregarListaProfessores;
+procedure SalvarListaProfessores;
 
 type
 
-  CProfessores = class
-
+  TProfessor = class
   private
-
-    vNome: String;
-    vCodigo: Integer;
-    vCPF: Integer;
-
+    FNome: String;
+    FCodigo: Integer;
+    FCPF: String;
   public
-
-    constructor Create(Nome: String; Codigo: Integer; CPF: Integer);
     procedure SetNome(Nome: String);
     procedure SetCodigo(Codigo: Integer);
-    procedure SetCPF(CPF: Integer);
+    procedure SetCPF(CPF: String);
     function GetNome: String;
     function GetCodigo: Integer;
-    function GetCPF: Integer;
+    function GetCPF: String;
   end;
+
+var
+  ListaProfessores: TObjectList<TProfessor>;
 
 implementation
 
-{ CProfessores }
-
-constructor CProfessores.Create(Nome: String; Codigo, CPF: Integer);
+procedure AdicionarProfessor(aNome, aCPF: String);
+var
+  i, maiorCodigo: Integer;
+  professor: TProfessor;
 begin
-
+  maiorCodigo := 1;
+  for i := 0 to ListaProfessores.Count - 1 do
+  begin
+    if ListaProfessores[i].GetCodigo >= maiorCodigo then
+      maiorCodigo := ListaProfessores[i].GetCodigo + 1;
+  end;
+  professor := TProfessor.Create;
+  professor.SetCodigo(maiorCodigo);
+  professor.SetNome(aNome);
+  professor.SetCPF(aCPF);
+  ListaProfessores.Add(professor);
 end;
 
-procedure CProfessores.SetNome(Nome: String);
+procedure EditarProfessor(aCodigo: Integer; aNome, aCPF: String);
+var
+  i: Integer;
+  professor: TProfessor;
 begin
-  vNome := Nome;
+  for i := 0 to ListaProfessores.Count - 1 do
+  begin
+    if ListaProfessores[i].GetCodigo = aCodigo then
+    begin
+      professor := ListaProfessores[i];
+      professor.SetNome(aNome);
+      professor.SetCPF(aCPF);
+      Break;
+    end;
+  end;
 end;
 
-procedure CProfessores.SetCodigo(Codigo: Integer);
+procedure ExcluirProfessor(aCodigo: Integer);
+var
+  i: Integer;
+  professor: TProfessor;
 begin
-  vCodigo := Codigo;
+  for i := 0 to ListaProfessores.Count - 1 do
+  begin
+    if ListaProfessores[i].GetCodigo = aCodigo then
+    begin
+      professor := ListaProfessores[i];
+      ListaProfessores.Extract(professor);
+      professor.Free;
+      Break;
+    end;
+  end;
 end;
 
-procedure CProfessores.SetCPF(CPF: Integer);
+function BuscarCodigoProfessorPeloNome(aNome: String): Integer;
+var
+  i: Integer;
 begin
-  vCPF := CPF;
+  Result := 0;
+  for i := 0 to ListaProfessores.Count - 1 do
+  begin
+    if ListaProfessores[i].GetNome = aNome then
+    begin
+      Result := ListaProfessores[i].GetCodigo;
+      Break;
+    end;
+  end;
 end;
 
-function CProfessores.GetNome: String;
+procedure CarregarListaProfessores;
+var
+  caminho, Json: String;
 begin
-  Result := vNome;
+  caminho := ExtractFilePath(ParamStr(0));
+  if not DirectoryExists(caminho + '\data') then
+    ForceDirectories(caminho + '\data');
+
+  if TFile.Exists(caminho + '\data\professores.json', False) then
+  begin
+    Json := TFile.ReadAllText(caminho + '\data\professores.json', TEncoding.UTF8);
+    ListaProfessores.Free;
+    ListaProfessores := TJson.JsonToObject<TObjectList<TProfessor>>(Json);
+  end;
 end;
 
-function CProfessores.GetCodigo: Integer;
+procedure SalvarListaProfessores;
+var
+  caminho, Json: String;
 begin
-  Result := vCodigo;
+  caminho := ExtractFilePath(ParamStr(0));
+  if not DirectoryExists(caminho + '\data') then
+    ForceDirectories(caminho + '\data');
+
+  Json := TJson.ObjectToJsonString(ListaProfessores);
+  TFile.WriteAllText(caminho + '\data\professores.json', Json, TEncoding.UTF8);
 end;
 
-function CProfessores.GetCPF: Integer;
+{ TProfessor }
+
+procedure TProfessor.SetNome(Nome: String);
 begin
-  Result := vCPF;
+  FNome := Nome;
 end;
+
+procedure TProfessor.SetCodigo(Codigo: Integer);
+begin
+  FCodigo := Codigo;
+end;
+
+procedure TProfessor.SetCPF(CPF: String);
+begin
+  FCPF := CPF;
+end;
+
+function TProfessor.GetNome: String;
+begin
+  Result := FNome;
+end;
+
+function TProfessor.GetCodigo: Integer;
+begin
+  Result := FCodigo;
+end;
+
+function TProfessor.GetCPF: String;
+begin
+  Result := FCPF;
+end;
+
+initialization
+
+ListaProfessores := TObjectList<TProfessor>.Create;
+
+finalization
+
+ListaProfessores.Free;
 
 end.
+
