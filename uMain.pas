@@ -37,7 +37,6 @@ type
     but_turma: TButton;
     but_matricula: TButton;
     img_disci: TImage;
-    box_disciplinas: TListBox;
     edit_codigo_disci: TEdit;
     edit_nome_disci: TEdit;
     painel_contrle_disci: TPanel;
@@ -115,6 +114,7 @@ type
     but_salvar_estudante: TButton;
     but_salvar_professor: TButton;
     but_limpar_disciplinas: TButton;
+    box_disciplinas: TComboBox;
     procedure but_estudanteClick(Sender: TObject);
     procedure but_professorClick(Sender: TObject);
     procedure but_disciplinaClick(Sender: TObject);
@@ -130,7 +130,7 @@ type
     procedure but_adicionar_estudanteClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure but_excluir_estudanteClick(Sender: TObject);
-    procedure EstudanteShow(Sender: TObject);//
+    procedure EstudanteShow(Sender: TObject);
     procedure box_nome_estudanteChange(Sender: TObject);
     procedure but_limpar_estudanteClick(Sender: TObject);
     procedure but_loginClick(Sender: TObject);
@@ -142,11 +142,13 @@ type
     procedure but_salvar_professorClick(Sender: TObject);
     procedure box_nome_professorChange(Sender: TObject);
     procedure ProfessorShow(Sender: TObject);
+    procedure box_disciplinasChange(Sender: TObject);
     procedure but_adicionar_disciplinasClick(Sender: TObject);
     procedure but_editar_disciplinasClick(Sender: TObject);
     procedure but_excluir_disciplinasClick(Sender: TObject);
     procedure but_salvar_disciplinasClick(Sender: TObject);
     procedure but_limpar_disciplinasClick(Sender: TObject);
+    procedure DisciplinasShow(Sender: TObject);
 
   private
     Operacao: String;
@@ -513,7 +515,7 @@ procedure TMain.but_adicionar_disciplinasClick(Sender: TObject);
 begin
   Operacao := 'Adicionar';
   LimparEditsdisciplinas;
-  EditarEditsdisciplinas;
+  EditarEditsDisciplinas;
   edit_nome_disci.SetFocus;
 end;
 
@@ -539,13 +541,13 @@ end;
 
 procedure TMain.but_salvar_disciplinasClick(Sender: TObject);
 begin
-    if ValidarConteudoEditsDiciplinas then begin
+    if ValidarConteudoEditsDisciplinas then begin
       if Operacao = 'Adicionar' then begin
         AdicionarDisciplina(edit_nome_disci.Text);
         LimparEditsDisciplinas;
       end else if Operacao = 'Editar' then begin
         if MessageDlg('Tem certeza de que deseja editar a disciplina selecionada?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then begin
-          EditarDisciplina(StrToInt(edit_codigo_disciplinas.Text), edit_nome_disciplinas.Text);
+          EditarDisciplina(StrToInt(edit_codigo_disci.Text), edit_nome_disci.Text);
         end;
       end;
       RecarregarBoxDisciplinas;
@@ -565,7 +567,7 @@ end;
  procedure TMain.EditarEditsDisciplinas;
 begin
   edit_nome_disci.ReadOnly := False;
-  edit_codigo_disci.ReadOnly := False;
+  //edit_codigo_disci.ReadOnly := False;
 
 end;
 

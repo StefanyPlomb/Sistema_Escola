@@ -52,7 +52,7 @@ begin
       maiorCodigo := ListaDisciplinas[i].GetCodigo + 1;
     end;
   end;
-  //disciplina := TDisciplina.Create;
+
   disciplina.SetCodigo(maiorCodigo);
   disciplina.SetNome(aNome);
   ListaDisciplinas.Add(disciplina);
